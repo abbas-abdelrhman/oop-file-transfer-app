@@ -5,8 +5,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.*;
-import java.net.*;
 
 
 public class Frontend extends JFrame {
@@ -21,34 +19,10 @@ public class Frontend extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Create components for top panel & logs area
-        serverResponseArea = new JTextArea();
-        sendButton = new JButton("Save File");
-        selectDestButton = new JButton("Select Destination");
-        destinationField = new JTextField(30);
 
-        // Create server files section
-        DefaultMutableTreeNode root = createFileTreeNodes();
-        fileTree = new JTree(root);
-        JScrollPane treeView = new JScrollPane(fileTree);
-        JPanel filePanel = new JPanel(new BorderLayout());
-        filePanel.add(new JLabel("Select a file from the server"), BorderLayout.NORTH);
-        filePanel.add(treeView, BorderLayout.CENTER);
-
-        // Add components to the top panel
-        JPanel destinationPanel = new JPanel(new FlowLayout());
-        destinationPanel.add(selectDestButton);
-        destinationPanel.add(destinationField);
-
-        JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.add(new JLabel("Select a file from the server and destination on local machine:"), BorderLayout.NORTH);
-        topPanel.add(destinationPanel, BorderLayout.CENTER);
-        topPanel.add(sendButton, BorderLayout.SOUTH);
-
-
-        // Add panels and logs area to the frame
-        add(topPanel, BorderLayout.NORTH);
-        add(filePanel, BorderLayout.WEST);
+        // Add panels to the frame
+        add(topPanel(), BorderLayout.NORTH);
+        add(treePanel(), BorderLayout.WEST);
         add(new JScrollPane(serverResponseArea), BorderLayout.CENTER);
 
 
@@ -65,6 +39,7 @@ public class Frontend extends JFrame {
         // Action listener for the send button
         sendButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+
                 TreePath selectedPath = fileTree.getSelectionPath();
                 if (selectedPath == null) {
                     JOptionPane.showMessageDialog(com.oopbackend.Frontend.this, "Please select a file from the server.");
@@ -87,49 +62,41 @@ public class Frontend extends JFrame {
                 }
                 String urlString = urlBuilder.toString();
 
-                transferFile(urlString, destinationFolder);
+                FileTransferService transferFile = new FileTransferService();
+                transferFile.FileTransferService(urlString, destinationFolder, serverResponseArea);
 
             }
         });
     }
 
-    private void transferFile(String urlString, String destinationFolder) {
-        try {
-            // create URL object
-            URL url = new URL(urlString);
+    public JPanel topPanel() {
+        // Create components for top panel & logs area
+        serverResponseArea = new JTextArea();
+        sendButton = new JButton("Save File");
+        selectDestButton = new JButton("Select Destination");
+        destinationField = new JTextField(30);
 
-            //create HttpURLConnection
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        // Add components to the top panel
+        JPanel destinationPanel = new JPanel(new FlowLayout());
+        destinationPanel.add(selectDestButton);
+        destinationPanel.add(destinationField);
 
-            //Set request mode to GET
-            connection.setRequestMethod("GET");
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.add(new JLabel("Select a file from the server and destination on local machine:"), BorderLayout.NORTH);
+        topPanel.add(destinationPanel, BorderLayout.CENTER);
+        topPanel.add(sendButton, BorderLayout.SOUTH);
 
-            //get response code
-            int responseCode = connection.getResponseCode();
+        return topPanel;
+    }
 
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-
-                //Read response from input stream
-                BufferedReader reader = new BufferedReader(new InputStreamReader(
-                        connection.getInputStream()
-                ));
-                StringBuilder response = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    response.append(line);
-                }
-                reader.close();
-
-
-                serverResponseArea.setText("File transferred successfully to " + destinationFolder);
-            } else {
-                serverResponseArea.setText("Error: Server responded with code " + responseCode);
-            }
-
-            connection.disconnect();
-        } catch (IOException ex) {
-            serverResponseArea.setText("Error: " + ex.getMessage());
-        }
+    public JPanel treePanel() {
+        DefaultMutableTreeNode root = createFileTreeNodes();
+        fileTree = new JTree(root);
+        JScrollPane treeView = new JScrollPane(fileTree);
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(new JLabel("Select a file from the server"), BorderLayout.NORTH);
+        panel.add(treeView, BorderLayout.CENTER);
+        return panel;
     }
 
 
