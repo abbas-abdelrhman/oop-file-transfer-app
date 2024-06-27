@@ -15,7 +15,7 @@ public class Frontend extends JFrame {
     private JTextArea serverResponseArea;
     private JTree fileTree;
     private JTextField destinationField;
-    private JButton sendButton, selectDestButton, saveButton;
+    private JButton sendButton, selectDestButton;
 
     /**
      * Constructor for Frontend class.
