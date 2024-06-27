@@ -10,6 +10,7 @@ public class FileTransferService {
      *
      * @param urlString The URL of the file to transfer.
      * @param destinationFolder The local folder where the file will be saved.
+     * @param serverResponseArea The server logs
      */
     public void FileTransferService(String urlString, String destinationFolder, JTextArea serverResponseArea) {
         try {

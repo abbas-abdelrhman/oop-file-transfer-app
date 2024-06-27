@@ -6,13 +6,21 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.*;
 
-
+/**
+ * Frontend class represents the GUI frontend for a File Transfer Application.
+ * It extends JFrame and provides functionalities to select files from a server,
+ * choose a local destination directory, and initiate file transfer operations.
+ */
 public class Frontend extends JFrame {
     private JTextArea serverResponseArea;
     private JTree fileTree;
     private JTextField destinationField;
     private JButton sendButton, selectDestButton, saveButton;
 
+    /**
+     * Constructor for Frontend class.
+     * Sets up the GUI components and initializes action listeners.
+     */
     public Frontend() {
         super("File Transfer Application");
         setSize(700, 400);
@@ -20,7 +28,9 @@ public class Frontend extends JFrame {
         setLayout(new BorderLayout());
 
 
-        // Add panels to the frame
+        // Adding components and panels to the frame
+        serverResponseArea = new JTextArea();
+
         add(topPanel(), BorderLayout.NORTH);
         add(treePanel(), BorderLayout.WEST);
         add(new JScrollPane(serverResponseArea), BorderLayout.CENTER);
@@ -69,9 +79,14 @@ public class Frontend extends JFrame {
         });
     }
 
+    /**
+     * Creates and returns the top panel of the GUI.
+     * This panel includes components for file selection and destination directory.
+     *
+     * @return JPanel containing the top components
+     */
     public JPanel topPanel() {
-        // Create components for top panel & logs area
-        serverResponseArea = new JTextArea();
+        // Create components for top panel
         sendButton = new JButton("Save File");
         selectDestButton = new JButton("Select Destination");
         destinationField = new JTextField(30);
@@ -89,6 +104,12 @@ public class Frontend extends JFrame {
         return topPanel;
     }
 
+    /**
+     * Creates and returns the tree panel of the GUI.
+     * This panel displays the hierarchical file structure from the server.
+     *
+     * @return JPanel containing the file tree
+     */
     public JPanel treePanel() {
         DefaultMutableTreeNode root = createFileTreeNodes();
         fileTree = new JTree(root);
@@ -99,7 +120,11 @@ public class Frontend extends JFrame {
         return panel;
     }
 
-
+    /**
+     * Helper method to create the initial file tree nodes.
+     *
+     * @return DefaultMutableTreeNode representing the root node of the file tree
+     */
     private DefaultMutableTreeNode createFileTreeNodes() {
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("host");
 
@@ -135,6 +160,9 @@ public class Frontend extends JFrame {
         return root;
     }
 
+    /**
+     * Main method to start the application.
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
