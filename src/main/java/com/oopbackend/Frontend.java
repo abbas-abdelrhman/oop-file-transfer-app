@@ -71,17 +71,22 @@ public class Frontend extends JFrame {
                     return;
                 }
 
-                String selectedFile = selectedPath.getLastPathComponent().toString();
                 String destinationFolder = destinationField.getText();
-
                 if (destinationFolder.isEmpty()) {
-                JOptionPane.showMessageDialog(com.oopbackend.Frontend.this, "Please select a destination folder.");
-                return;
-            }
+                    JOptionPane.showMessageDialog(com.oopbackend.Frontend.this, "Please select a destination folder.");
+                    return;
+                }
+
 
                 // Get the URL from the text field
-                String urlString = "http://localhost:8000/host/OOP/Group1/Exercise01/exercise02.txt";
-                // String urlString = "http://localhost:8000/" + selectedPath.getPath()[1].toString() + "/" + selectedFile;
+                Object[] pathComponents = selectedPath.getPath();
+                StringBuilder urlBuilder = new StringBuilder("http://localhost:8000");
+
+                for (Object component : pathComponents) {
+                    urlBuilder.append("/").append(component.toString());
+                }
+                String urlString = urlBuilder.toString();
+
                 transferFile(urlString, destinationFolder);
 
             }
@@ -90,24 +95,31 @@ public class Frontend extends JFrame {
 
     private void transferFile(String urlString, String destinationFolder) {
         try {
+            // create URL object
             URL url = new URL(urlString);
+
+            //create HttpURLConnection
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            //Set request mode to GET
             connection.setRequestMethod("GET");
 
+            //get response code
             int responseCode = connection.getResponseCode();
+
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                InputStream inputStream = connection.getInputStream();
-                File destinationFile = new File(destinationFolder, new File(url.getPath()).getName());
-                FileOutputStream outputStream = new FileOutputStream(destinationFile);
 
-                byte[] buffer = new byte[4096];
-                int bytesRead;
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, bytesRead);
+                //Read response from input stream
+                BufferedReader reader = new BufferedReader(new InputStreamReader(
+                        connection.getInputStream()
+                ));
+                StringBuilder response = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
                 }
+                reader.close();
 
-                outputStream.close();
-                inputStream.close();
 
                 serverResponseArea.setText("File transferred successfully to " + destinationFolder);
             } else {
@@ -121,40 +133,40 @@ public class Frontend extends JFrame {
     }
 
 
-private DefaultMutableTreeNode createFileTreeNodes() {
-    DefaultMutableTreeNode root = new DefaultMutableTreeNode("host");
+    private DefaultMutableTreeNode createFileTreeNodes() {
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode("host");
 
-    DefaultMutableTreeNode oop = new DefaultMutableTreeNode("OOP");
-    root.add(oop);
+        DefaultMutableTreeNode oop = new DefaultMutableTreeNode("OOP");
+        root.add(oop);
 
-    DefaultMutableTreeNode group1 = new DefaultMutableTreeNode("Group1");
-    oop.add(group1);
+        DefaultMutableTreeNode group1 = new DefaultMutableTreeNode("Group1");
+        oop.add(group1);
 
-    DefaultMutableTreeNode exercise01Group1 = new DefaultMutableTreeNode("Exercise01");
-    group1.add(exercise01Group1);
-    exercise01Group1.add(new DefaultMutableTreeNode("data.txt"));
-    exercise01Group1.add(new DefaultMutableTreeNode("exercise01.txt"));
+        DefaultMutableTreeNode exercise01Group1 = new DefaultMutableTreeNode("Exercise01");
+        group1.add(exercise01Group1);
+        exercise01Group1.add(new DefaultMutableTreeNode("data.txt"));
+        exercise01Group1.add(new DefaultMutableTreeNode("exercise01.txt"));
 
-    DefaultMutableTreeNode exercise02Group1 = new DefaultMutableTreeNode("Exercise02");
-    group1.add(exercise02Group1);
-    exercise02Group1.add(new DefaultMutableTreeNode("data.txt"));
-    exercise02Group1.add(new DefaultMutableTreeNode("exercise02.txt"));
+        DefaultMutableTreeNode exercise02Group1 = new DefaultMutableTreeNode("Exercise02");
+        group1.add(exercise02Group1);
+        exercise02Group1.add(new DefaultMutableTreeNode("data.txt"));
+        exercise02Group1.add(new DefaultMutableTreeNode("exercise02.txt"));
 
-    DefaultMutableTreeNode group2 = new DefaultMutableTreeNode("Group2");
-    oop.add(group2);
+        DefaultMutableTreeNode group2 = new DefaultMutableTreeNode("Group2");
+        oop.add(group2);
 
-    DefaultMutableTreeNode exercise01Group2 = new DefaultMutableTreeNode("Exercise01");
-    group2.add(exercise01Group2);
-    exercise01Group2.add(new DefaultMutableTreeNode("data.txt"));
-    exercise01Group2.add(new DefaultMutableTreeNode("exercise01.txt"));
+        DefaultMutableTreeNode exercise01Group2 = new DefaultMutableTreeNode("Exercise01");
+        group2.add(exercise01Group2);
+        exercise01Group2.add(new DefaultMutableTreeNode("data.txt"));
+        exercise01Group2.add(new DefaultMutableTreeNode("exercise01.txt"));
 
-    DefaultMutableTreeNode exercise02Group2 = new DefaultMutableTreeNode("Exercise02");
-    group2.add(exercise02Group2);
-    exercise02Group2.add(new DefaultMutableTreeNode("data.txt"));
-    exercise02Group2.add(new DefaultMutableTreeNode("exercise02.txt"));
+        DefaultMutableTreeNode exercise02Group2 = new DefaultMutableTreeNode("Exercise02");
+        group2.add(exercise02Group2);
+        exercise02Group2.add(new DefaultMutableTreeNode("data.txt"));
+        exercise02Group2.add(new DefaultMutableTreeNode("exercise02.txt"));
 
-    return root;
-}
+        return root;
+    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
